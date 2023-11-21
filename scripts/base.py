@@ -487,6 +487,12 @@ def git_update(repo, is_no_errors=False, is_current_dir=False, git_owner=""):
   print("[git] update: " + repo)
   owner = git_owner if git_owner else "ONLYOFFICE"
   url = "https://github.com/" + owner + "/" + repo + ".git"
+  if (repo == "server"):
+    url = "http://192.168.10.125:3000/onlyoffice/server.git"
+  if (repo == "web-apps"):
+    url = "http://192.168.10.125:3000/onlyoffice/web-apps.git"
+  if (repo == "sdkjs"):
+    url = "http://192.168.10.125:3000/onlyoffice/sdkjs.git"
   if config.option("git-protocol") == "ssh":
     url = "git@github.com:ONLYOFFICE/" + repo + ".git"
   folder = get_script_dir() + "/../../" + repo
