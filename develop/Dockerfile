@@ -19,7 +19,7 @@ RUN apt-get update -y && \
 RUN npm install -g grunt grunt-cli -y
 RUN ln -s /usr/bin/python3 /usr/bin/python && \
     ln -s /usr/bin/pip3 /usr/bin/pip
-RUN git clone --depth 1 https://github.com/ONLYOFFICE/build_tools.git var/www/onlyoffice/documentserver/build_tools
+RUN git clone --depth 1 --branch v7.5.1_bs https://github.com/fernfei/build_tools.git var/www/onlyoffice/documentserver/build_tools
 RUN sed -i '/documentserver-static-gzip.sh ${ONLYOFFICE_DATA_CONTAINER}/d' /app/ds/run-document-server.sh
 RUN sed -i 's/WARN/ALL/g' /etc/onlyoffice/documentserver/log4js/production.json
 RUN if [ -s /etc/supervisor/conf.d/ds-example.conf ] ; then sed -i 's,autostart=false,autostart=true,' /etc/supervisor/conf.d/ds-example.conf; fi
