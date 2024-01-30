@@ -72,7 +72,18 @@ def unpatch_windows_debug():
   file_patch = "./src/heap/heap.h"
   base.move_file(file_patch + ".bak", file_patch)
   return
+
+
+def is_package_installed(package_name):
+  process = subprocess.Popen(["dpkg", "-s", package_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  out, err = process.communicate()
+  return process.returncode == 0
 def install_clang():
+  # Check if the packages are already installed
+  packages = ["clang-12", "lld-12", "x11-utils", "llvm-12"]
+  if all(is_package_installed(pkg) for pkg in packages):
+    print("clang-12, lld-12, x11-utils, llvm-12 required packages are already installed.")
+    return True
   print("Clang++ Installing...")
   try:
     # wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
@@ -299,24 +310,25 @@ def make():
     gn_args.append("clang_use_chrome_plugins=false")
     gn_args.append("use_lld = true")
     base.cmd("build/linux/sysroot_scripts/install-sysroot.py", ["--arch=arm64"], False)
-    base.cmd("git", ["clone", "https://github.com/ninja-build/ninja.git", "-b", "v1.8.2", "customnin"], False)
-    os.chdir("customnin")
-    base.cmd("./configure.py", ["--bootstrap"])
-    os.chdir("../")
-    base.cmd("cp", ["-v", "customnin/ninja", "/bin/ninja"])
+    if not base.is_file("/bin/ninja"):
+      base.cmd("git", ["clone", "https://github.com/ninja-build/ninja.git", "-b", "v1.8.2", "customnin"], False)
+      os.chdir("customnin")
+      base.cmd("./configure.py", ["--bootstrap"])
+      os.chdir("../")
+      base.cmd("sudo", ["cp", "-v", "customnin/ninja", "/bin/ninja"])
     if os.path.exists("/core/Common/3dParty/v8_89/depot_tools/ninja"):
       base.cmd("rm", ["-v", "/core/Common/3dParty/v8_89/depot_tools/ninja"])
-    shutil.rmtree("customnin")
-
-    base.cmd("git", ["clone", "https://gn.googlesource.com/gn", "customgn"], False)
-    os.chdir("customgn")
-    base.cmd("git", ["checkout", "23d22bcaa71666e872a31fd3ec363727f305417e"], False)
-    base.cmd("sed", ["-i", "-e", "\"s/-Wl,--icf=all//\"", "build/gen.py"], False)
-    base.cmd("python", ["build/gen.py"], False)
-    base.cmd("ninja", ["-C", "out"])
-    os.chdir("../")
-    base.cmd("cp", ["./customgn/out/gn", "./buildtools/linux64/gn"])
-    shutil.rmtree("customgn")
+    if not base.is_file("./buildtools/linux64/gn"):
+      shutil.rmtree("customnin")
+      base.cmd("git", ["clone", "https://gn.googlesource.com/gn", "customgn"], False)
+      os.chdir("customgn")
+      base.cmd("git", ["checkout", "23d22bcaa71666e872a31fd3ec363727f305417e"], False)
+      base.cmd("sed", ["-i", "-e", "\"s/-Wl,--icf=all//\"", "build/gen.py"], False)
+      base.cmd("python", ["build/gen.py"], False)
+      base.cmd("ninja", ["-C", "out"])
+      os.chdir("../")
+      base.cmd("sudo", ["cp","./customgn/out/gn", "./buildtools/linux64/gn"])
+      shutil.rmtree("customgn")
 
     base.cmd2("gn", ["gen", "out.gn/linux_arm64", make_args(gn_args, "linux", False)])
     base.cmd("ninja", ["-C", "out.gn/linux_arm64"])
