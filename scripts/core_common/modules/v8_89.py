@@ -305,14 +305,16 @@ def make():
              "treat_warnings_as_errors=false"]
 
   if os.uname()[len(os.uname()) - 1] == "aarch64":
+    if not base.is_dir("customnin"):
+      base.cmd("rm", ["-rf", "customnin"], False)
+    if not base.is_dir("customgn"):
+      base.cmd("rm", ["-rf", "customgn"], False)
     install_clang()
     gn_args.append("clang_base_path=\\\"/usr/\\\"")
     gn_args.append("clang_use_chrome_plugins=false")
     gn_args.append("use_lld = true")
     base.cmd("build/linux/sysroot_scripts/install-sysroot.py", ["--arch=arm64"], False)
     if not base.is_file("/bin/ninja"):
-      if not base.is_dir("customnin"):
-        base.cmd("rm", ["-rf", "customnin"], False)
       base.cmd("git", ["clone", "https://github.com/ninja-build/ninja.git", "-b", "v1.8.2", "customnin"], False)
       os.chdir("customnin")
       base.cmd("./configure.py", ["--bootstrap"])
@@ -322,8 +324,6 @@ def make():
     if os.path.exists("/core/Common/3dParty/v8_89/depot_tools/ninja"):
       base.cmd("rm", ["-v", "/core/Common/3dParty/v8_89/depot_tools/ninja"])
     if not base.is_file("./buildtools/linux64/gn"):
-      if not base.is_dir("customgn"):
-        base.cmd("rm", ["-rf", "customgn"], False)
       base.cmd("git", ["clone", "https://gn.googlesource.com/gn", "customgn"], False)
       os.chdir("customgn")
       base.cmd("git", ["checkout", "23d22bcaa71666e872a31fd3ec363727f305417e"], False)
