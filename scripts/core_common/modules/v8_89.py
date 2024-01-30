@@ -87,18 +87,10 @@ def install_clang():
     return True
   print("Clang++ Installing...")
   try:
-    ubuntu_versions = {
-      '14.04': 'trusty',
-      '16.04': 'xenial',
-      '18.04': 'bionic',
-      '20.04': 'focal',
-      '22.04': 'jammy'
-    }
     version = platform.linux_distribution()[2]
-    codename = ubuntu_versions.get(version)
     subprocess.check_call(["wget", "-O", "-", "https://apt.llvm.org/llvm-snapshot.gpg.key"])
-    if codename:
-      llvm_url = "http://apt.llvm.org/{}/llvm-toolchain-{}/main".format(codename, codename)
+    if version:
+      llvm_url = "http://apt.llvm.org/{}/llvm-toolchain-{}/main".format(version, version)
       subprocess.check_call(["echo", "deb {} | sudo tee /etc/apt/sources.list.d/llvm.list".format(llvm_url)])
     else:
       print("Unsupported Ubuntu version.")
