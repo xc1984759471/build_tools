@@ -223,7 +223,7 @@ def install_clang():
     if not os.path.exists("/usr/bin/opt"):
       base.cmd("sudo", ["ln","-s", "/usr/bin/opt-12", "/usr/bin/opt"])
     if not os.path.exists("/usr/bin/verify-uselistorder"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/verify-uselistorder-10", "/usr/bin/verify-uselistorder"])
+      base.cmd("sudo", ["ln","-s", "/usr/bin/verify-uselistorder-12", "/usr/bin/verify-uselistorder"])
     if not os.path.exists("/usr/bin/sanstats"):
       base.cmd("sudo", ["ln","-s", "/usr/bin/sanstats-12", "/usr/bin/sanstats"])
     if not os.path.exists("/usr/bin/yaml-bench"):
@@ -233,7 +233,7 @@ def install_clang():
     if not os.path.exists("/usr/bin/ld.lld"):
       base.cmd("sudo", ["ln","-s", "/usr/bin/ld.lld-12", "/usr/bin/ld.lld"])
     if not os.path.exists("/usr/bin/lld"):
-      base.cmd("sudo", ["ln","ln","-s", "/usr/bin/lld-12", "/usr/bin/lld"])
+      base.cmd("sudo", ["ln","-s", "/usr/bin/lld-12", "/usr/bin/lld"])
     if not os.path.exists("/usr/bin/ld64.lld"):
       base.cmd("sudo", ["ln","-s", "/usr/bin/ld64.lld-12", "/usr/bin/ld64.lld"])
     if not os.path.exists("/usr/bin/lld-link"):
