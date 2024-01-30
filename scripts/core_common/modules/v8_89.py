@@ -90,11 +90,9 @@ def install_clang():
     version = platform.linux_distribution()[2]
     subprocess.check_call(["wget", "-O", "-", "https://apt.llvm.org/llvm-snapshot.gpg.key"])
     if version:
-      llvm_url = "http://apt.llvm.org/{}/llvm-toolchain-{}/main".format(version, version)
-      subprocess.check_call(["echo", "deb {} | sudo tee /etc/apt/sources.list.d/llvm.list".format(llvm_url)])
+      subprocess.check_call(["echo", "deb http://apt.llvm.org/{}/ llvm-toolchain-{}-12 main | sudo tee /etc/apt/sources.list.d/llvm.list".format(version,version)])
     else:
       print("Unsupported Ubuntu version.")
-    subprocess.check_call(["echo", "deb http://apt.llvm.org/{codename}/ llvm-toolchain-bionic-12 main | sudo tee /etc/apt/sources.list.d/llvm.list"])
     subprocess.check_call(["sudo", "apt-get", "update"])
     subprocess.check_call(["sudo", "apt-get", "install", "clang-12","lld-12","x11-utils","llvm-12","-y"])
     if not os.path.exists("/usr/bin/clang"):
