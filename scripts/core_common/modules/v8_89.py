@@ -7,6 +7,7 @@ import base
 import os
 import subprocess
 import shutil
+import platform
 def make_args(args, platform, is_64=True, is_debug=False):
   args_copy = args[:]
   if not os.uname()[len(os.uname())-1]:
@@ -27,7 +28,7 @@ def make_args(args, platform, is_64=True, is_debug=False):
       args_copy.append("enable_iterator_debugging=true")
   else:
     args_copy.append("is_debug=false")
-  
+
   if (platform == "linux"):
     args_copy.append("is_clang=true")
     if not os.uname()[len(os.uname()) - 1] == "aarch64":
@@ -86,10 +87,22 @@ def install_clang():
     return True
   print("Clang++ Installing...")
   try:
-    # wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+    ubuntu_versions = {
+      '14.04': 'trusty',
+      '16.04': 'xenial',
+      '18.04': 'bionic',
+      '20.04': 'focal',
+      '22.04': 'jammy'
+    }
+    version = platform.linux_distribution()[2]
+    codename = ubuntu_versions.get(version)
     subprocess.check_call(["wget", "-O", "-", "https://apt.llvm.org/llvm-snapshot.gpg.key"])
-    # echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main" | sudo tee /etc/apt/sources.list.d/llvm.list
-    subprocess.check_call(["echo", "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | sudo tee /etc/apt/sources.list.d/llvm.list"])
+    if codename:
+      llvm_url = "http://apt.llvm.org/{}/llvm-toolchain-{}/main".format(codename, codename)
+      subprocess.check_call(["echo", "deb {} | sudo tee /etc/apt/sources.list.d/llvm.list".format(llvm_url)])
+    else:
+      print("Unsupported Ubuntu version.")
+    subprocess.check_call(["echo", "deb http://apt.llvm.org/{codename}/ llvm-toolchain-bionic-12 main | sudo tee /etc/apt/sources.list.d/llvm.list"])
     subprocess.check_call(["sudo", "apt-get", "update"])
     subprocess.check_call(["sudo", "apt-get", "install", "clang-12","lld-12","x11-utils","llvm-12","-y"])
     if not os.path.exists("/usr/bin/clang"):
@@ -296,7 +309,7 @@ def make():
     base.replaceInFile("v8/third_party/jinja2/tests.py", "from collections import Mapping", "try:\n    from collections.abc import Mapping\nexcept ImportError:\n    from collections import Mapping")
 
   os.chdir("v8")
-  
+
   gn_args = ["v8_static_library=true",
              "is_component_build=false",
              "v8_monolithic=true",
