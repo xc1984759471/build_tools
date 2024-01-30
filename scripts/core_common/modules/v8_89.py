@@ -305,9 +305,9 @@ def make():
              "treat_warnings_as_errors=false"]
 
   if os.uname()[len(os.uname()) - 1] == "aarch64":
-    if not base.is_dir("customnin"):
+    if os.path.exists("./customnin"):
       base.cmd("rm", ["-rf", "customnin"], False)
-    if not base.is_dir("customgn"):
+    if os.path.exists("./customgn"):
       base.cmd("rm", ["-rf", "customgn"], False)
     install_clang()
     gn_args.append("clang_base_path=\\\"/usr/\\\"")
