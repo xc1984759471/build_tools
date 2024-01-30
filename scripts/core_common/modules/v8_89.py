@@ -311,15 +311,19 @@ def make():
     gn_args.append("use_lld = true")
     base.cmd("build/linux/sysroot_scripts/install-sysroot.py", ["--arch=arm64"], False)
     if not base.is_file("/bin/ninja"):
+      if not base.is_dir("customnin"):
+        base.cmd("rm", ["-rf", "customnin"], False)
       base.cmd("git", ["clone", "https://github.com/ninja-build/ninja.git", "-b", "v1.8.2", "customnin"], False)
       os.chdir("customnin")
       base.cmd("./configure.py", ["--bootstrap"])
       os.chdir("../")
       base.cmd("sudo", ["cp", "-v", "customnin/ninja", "/bin/ninja"])
+      shutil.rmtree("customnin")
     if os.path.exists("/core/Common/3dParty/v8_89/depot_tools/ninja"):
       base.cmd("rm", ["-v", "/core/Common/3dParty/v8_89/depot_tools/ninja"])
     if not base.is_file("./buildtools/linux64/gn"):
-      shutil.rmtree("customnin")
+      if not base.is_dir("customgn"):
+        base.cmd("rm", ["-rf", "customgn"], False)
       base.cmd("git", ["clone", "https://gn.googlesource.com/gn", "customgn"], False)
       os.chdir("customgn")
       base.cmd("git", ["checkout", "23d22bcaa71666e872a31fd3ec363727f305417e"], False)
