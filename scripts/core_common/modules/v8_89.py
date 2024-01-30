@@ -323,16 +323,16 @@ def make():
       shutil.rmtree("customnin")
     if os.path.exists("/core/Common/3dParty/v8_89/depot_tools/ninja"):
       base.cmd("rm", ["-v", "/core/Common/3dParty/v8_89/depot_tools/ninja"])
-    if not base.is_file("./buildtools/linux64/gn"):
-      base.cmd("git", ["clone", "https://gn.googlesource.com/gn", "customgn"], False)
-      os.chdir("customgn")
-      base.cmd("git", ["checkout", "23d22bcaa71666e872a31fd3ec363727f305417e"], False)
-      base.cmd("sed", ["-i", "-e", "\"s/-Wl,--icf=all//\"", "build/gen.py"], False)
-      base.cmd("python", ["build/gen.py"], False)
-      base.cmd("ninja", ["-C", "out"])
-      os.chdir("../")
-      base.cmd("sudo", ["cp","./customgn/out/gn", "./buildtools/linux64/gn"])
-      shutil.rmtree("customgn")
+
+    base.cmd("git", ["clone", "https://gn.googlesource.com/gn", "customgn"], False)
+    os.chdir("customgn")
+    base.cmd("git", ["checkout", "23d22bcaa71666e872a31fd3ec363727f305417e"], False)
+    base.cmd("sed", ["-i", "-e", "\"s/-Wl,--icf=all//\"", "build/gen.py"], False)
+    base.cmd("python", ["build/gen.py"], False)
+    base.cmd("ninja", ["-C", "out"])
+    os.chdir("../")
+    base.cmd("sudo", ["cp","./customgn/out/gn", "./buildtools/linux64/gn"])
+    shutil.rmtree("customgn")
 
     base.cmd2("gn", ["gen", "out.gn/linux_arm64", make_args(gn_args, "linux", False)])
     base.cmd("ninja", ["-C", "out.gn/linux_arm64"])
