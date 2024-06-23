@@ -28,7 +28,7 @@ def change_bootstrap():
 
 def make_args(args, platform, is_64=True, is_debug=False):
   args_copy = args[:]
-  if not os.uname()[len(os.uname())-1]:
+  if not base.is_os_arm():
     if is_64:
       args_copy.append("target_cpu=\\\"x64\\\"")
       args_copy.append("v8_target_cpu=\\\"x64\\\"")
@@ -49,7 +49,7 @@ def make_args(args, platform, is_64=True, is_debug=False):
   
   if (platform == "linux"):
     args_copy.append("is_clang=true")
-    if not os.uname()[len(os.uname()) - 1] == "aarch64":
+    if base.is_os_arm():
       args_copy.append("use_sysroot=false")
   if (platform == "windows"):
     args_copy.append("is_clang=false")
@@ -275,7 +275,6 @@ def update_gcc_version():
   base.cmd("sudo",["update-alternatives", "--config", "gcc"])
   return
 # ----------------------------------------------------------------------
-
 def make():
   old_env = dict(os.environ)
   old_cur = os.getcwd()
@@ -329,7 +328,7 @@ def make():
              "use_custom_libcxx=false",
              "treat_warnings_as_errors=false"]
 
-  if os.uname()[len(os.uname()) - 1] == "aarch64":
+  if config.check_option("platform", "linux_arm64"):
     if os.path.exists("./customnin"):
       base.cmd("rm", ["-rf", "customnin"], False)
     if os.path.exists("./customgn"):
