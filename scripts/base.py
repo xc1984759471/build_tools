@@ -505,6 +505,8 @@ def git_update(repo, is_no_errors=False, is_current_dir=False, git_owner=""):
     url = "https://github.com/fernfei/web-apps.git"
   if (repo == "sdkjs"):
     url = "https://github.com/fernfei/sdkjs.git"
+  if (repo == "desktop-sdk"):
+    url = "https://github.com/fernfei/desktop-sdk.git"
   if config.option("git-protocol") == "ssh":
     url = "git@github.com:ONLYOFFICE/" + repo + ".git"
   folder = get_script_dir() + "/../../" + repo
