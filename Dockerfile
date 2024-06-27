@@ -10,9 +10,6 @@ RUN if [ "$(uname -m)" = "aarch64" ]; then \
         echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
         echo "deb http://security.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list; \
     fi
-ENV https_proxy=http://192.168.10.5:7890 \
-    http_proxy=http://192.168.10.5:7890 \
-    all_proxy=socks5://192.168.10.5:7890
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -29,5 +26,30 @@ RUN rm /usr/bin/python && ln -s /usr/bin/python2 /usr/bin/python
 ADD . /build_tools
 WORKDIR /build_tools
 
+# Define build arguments
+ARG BRANCH
+ARG PLATFORM
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+ENV http_proxy=${HTTP_PROXY}
+ENV https_proxy=${HTTPS_PROXY}
+
+# Set default values for environment variables
+ENV BRANCH ${BRANCH}
+ENV PLATFORM ${PLATFORM}
+
+# Define the command to run
 CMD cd tools/linux && \
-    python3 ./automate.py --platform=\"linux_arm64\"
+    if [ -n "$BRANCH" ]; then \
+        BRANCH_ARG="--branch=${BRANCH}"; \
+    else \
+        BRANCH_ARG=""; \
+    fi && \
+    if [ -n "$PLATFORM" ]; then \
+        PLATFORM_ARG="--platform=${PLATFORM}"; \
+    else \
+        PLATFORM_ARG=""; \
+    fi && \
+    python3 ./automate.py $BRANCH_ARG $PLATFORM_ARG
+
