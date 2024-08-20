@@ -1,0 +1,42 @@
+name: OnlyOffice Document Desktop Build
+            
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  arm64_build:
+    # The host should always be Linux
+    runs-on: ubuntu-22.04
+    name: Build on debian bookworm arm64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: uraimo/run-on-arch-action@v2
+        name: Run commands
+        id: runcmd
+        with:
+          arch: aarch64
+          distro: bullseye
+
+          # Not required, but speeds up builds by storing container images in
+          # a GitHub package registry.
+          githubToken: ${{ github.token }}
+
+          # Set an output parameter `uname` for use in subsequent steps
+          run: |
+            cd ${{ github.workspace }}/tools/linux
+            ls .
+            apt update
+            apt full-upgrade
+            apt-get install -y build-essential module-assistant python3 sudo software-properties-common python3-launchpadlib qtbase5-dev qtbase5-dev-tools
+            update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+            # python3 ./use_system_qt.py
+            python3 ./automate.py desktop --platform="linux_arm64"
+            ls -l .
+            tar -cvzf onlyoffice-linux-arm64-bin.tar.gz ../../out/linux_64/onlyoffice
+      - uses: actions/upload-artifact@v2
+        name: Upload arm64 binaries
+        with:
+          name: onlyoffice-linux-arm64
+          path: ./onlyoffice-linux-arm64-bin.tar.gz
