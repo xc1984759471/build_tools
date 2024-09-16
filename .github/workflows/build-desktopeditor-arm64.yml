@@ -12,7 +12,7 @@ jobs:
     name: Build on debian bookworm arm64
     steps:
       - uses: actions/checkout@v4
-      - uses: uraimo/run-on-arch-action@v2
+      - uses: uraimo/run-on-arch-action@v4
         name: Run commands
         id: runcmd
         with:
@@ -35,7 +35,7 @@ jobs:
             python3 ./automate.py desktop --platform="linux_arm64"
             ls -l .
             tar -cvzf onlyoffice-linux-arm64-bin.tar.gz ../../out/linux_64/onlyoffice
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         name: Upload arm64 binaries
         with:
           name: onlyoffice-linux-arm64
