@@ -21,10 +21,10 @@ jobs:
       run:  |
             cd ${{ github.workspace }}/tools/linux
             ls .
-            apt update
-            apt full-upgrade
-            apt-get install -y build-essential module-assistant python3 sudo software-properties-common python3-launchpadlib qtbase5-dev qtbase5-dev-tools
-            update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+            sudo apt update
+            sudo apt full-upgrade
+            sudo apt-get install -y build-essential module-assistant python3 sudo software-properties-common python3-launchpadlib qtbase5-dev qtbase5-dev-tools
+            sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
             # python3 ./use_system_qt.py
             python3 ./automate.py desktop --platform="linux_arm64"
             ls -l .
