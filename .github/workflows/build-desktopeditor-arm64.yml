@@ -18,8 +18,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: pguyot/arm-runner-action@v2
-    - name: configure and compile
-      run:  |
+      id: build_image
+      with:
+        base_image: raspios_lite:2022-04-04
+        commands: |
             cd ${{ github.workspace }}/tools/linux
             ls .
             sudo apt update
