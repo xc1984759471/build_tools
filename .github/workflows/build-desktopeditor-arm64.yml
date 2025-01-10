@@ -13,10 +13,11 @@ on:
 jobs:
   build:
 
-    runs-on: buildjet-4vcpu-ubuntu-1804-arm
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+    - uses: pguyot/arm-runner-action@v2
     - name: configure and compile
       run:  |
             cd ${{ github.workspace }}/tools/linux
