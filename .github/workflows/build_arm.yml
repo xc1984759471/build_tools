@@ -1,9 +1,6 @@
 name: Build OnlyOffice Arm Ver
 
 on:
-  push:
-    branches:
-      - release/v8.1.0
   workflow_dispatch:
 
 jobs:
@@ -20,14 +17,20 @@ jobs:
         sudo apt-get install -y python
         git clone https://github.com/fernfei/build_tools.git
         cd build_tools/tools/linux
-        RESULT=$(./automate.py --branch=${{ github.ref_name }} --platform=linux_arm64)
+        # 获取分支名并移除 'v' 前缀
+        VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+        RESULT=$(./automate.py --branch=$VERSION --platform=linux_arm64)
         echo "::set-output name=result_value::$RESULT"
+
     - name: Package deb
       run: |
         cd ../../../
         git clone https://github.com/ONLYOFFICE/document-server-package.git
         cd document-server-package
-        PRODUCT_VERSION='${{ github.ref_name.replace('v', '') }}' BUILD_NUMBER='1' make deb
+        # 使用 shell 变量替换 'v'
+        VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+        PRODUCT_VERSION=$VERSION BUILD_NUMBER='1' make deb
+
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
@@ -50,18 +53,22 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ github.ref_name.replace('v', '') }}
-        release_name: Release ${{ github.ref_name.replace('v', '') }}
-        draft: false
-        prerelease: false
-        token: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 使用 shell 移除 'v' 前缀
+        CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+        echo "Creating release with version: $CLEAN_VERSION"
+        gh release create $CLEAN_VERSION -t "Release $CLEAN_VERSION" -n "" --repo ${GITHUB_REPOSITORY}
+        echo "::set-output name=upload_url::$(gh release view $CLEAN_VERSION --json url | jq -r '.url')/assets"
+
+    - name: Set version environment
+      run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./output/
-        asset_name: ONLYOFFICE-DocumentServer-${{ github.ref_name.replace('v', '') }}_arm64.deb
+        asset_name: ONLYOFFICE-DocumentServer-${{ env.CLEAN_VERSION }}_arm64.deb
         asset_content_type: application/octet-stream
