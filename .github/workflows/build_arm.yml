@@ -17,7 +17,8 @@ jobs:
     - name: Build project
       id: build_step
       run: |
-        sudo apt-get install -y python
+        sudo apt-get install -y python3 python3-pip
+        sudo apt-get install -y python-is-python3
         git clone https://github.com/fernfei/build_tools.git
         cd build_tools/tools/linux
         ./automate.py --branch=${{ github.ref_name }} --platform=linux_arm64
