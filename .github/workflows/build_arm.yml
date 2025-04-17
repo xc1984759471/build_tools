@@ -1,6 +1,9 @@
 name: Build OnlyOffice Arm Ver
 
 on:
+  push:
+    branches:
+      - release/v8.1.0
   workflow_dispatch:
 
 jobs:
