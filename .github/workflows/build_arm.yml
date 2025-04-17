@@ -13,18 +13,21 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Clean npm cache
-      run: npm cache clean --force
 
-
+    - name: Docker Setup Docker
+      # You may pin to the exact commit or the version.
+      # uses: docker/setup-docker-action@b60f85385d03ac8acfca6d9996982511d8620a19
+      uses: docker/setup-docker-action@v4.3.0
+        
     - name: Build project
       id: build_step
       run: |
         sudo apt-get install -y python3 python3-pip
         sudo apt-get install -y python-is-python3
         git clone https://github.com/fernfei/build_tools.git
-        cd build_tools/tools/linux
-        sudo ./automate.py --branch=${{ github.ref_name }} --platform=linux_arm64
+        mkdir out
+        docker build --tag onlyoffice-document-editors-builder .
+        docker run -v $PWD/out:/build_tools/out onlyoffice-document-editors-builder
 
     - name: Package deb
       run: |
