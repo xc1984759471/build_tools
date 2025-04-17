@@ -13,6 +13,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: Clean npm cache
+      run: npm cache clean --force
+
 
     - name: Build project
       id: build_step
