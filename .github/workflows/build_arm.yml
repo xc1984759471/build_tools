@@ -1,0 +1,64 @@
+name: Build OnlyOffice Arm Ver
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build project
+      id: build_step
+      run: |
+        sudo apt-get install -y python
+        git clone https://github.com/fernfei/build_tools.git
+        cd build_tools/tools/linux
+        RESULT=$(./automate.py --branch=${{ github.ref_name }} --platform=linux_arm64)
+        echo "::set-output name=result_value::$RESULT"
+    - name: Package deb
+      run: |
+        cd ../../../
+        git clone https://github.com/ONLYOFFICE/document-server-package.git
+        cd document-server-package
+        PRODUCT_VERSION='${{ github.ref_name.replace('v', '') }}' BUILD_NUMBER='1' make deb
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: compiled-files
+        path: document-server-package/deb/
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: compiled-files
+        path: ./output
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref_name.replace('v', '') }}
+        release_name: Release ${{ github.ref_name.replace('v', '') }}
+        draft: false
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./output/
+        asset_name: ONLYOFFICE-DocumentServer-${{ github.ref_name.replace('v', '') }}_arm64.deb
+        asset_content_type: application/octet-stream
