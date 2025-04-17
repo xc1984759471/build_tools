@@ -1,6 +1,9 @@
 name: Build OnlyOffice Arm Ver
 
 on:
+  push:
+    branches:
+      - ${{ github.ref_name }}
   workflow_dispatch:
 
 jobs:
