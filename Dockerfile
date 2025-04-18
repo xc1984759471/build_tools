@@ -16,7 +16,7 @@ RUN apt-get -o Acquire::https::Verify-Peer=false update && \
      apt-get -y install ca-certificates
      
 RUN apt-get update && \
-    apt-get install -y python python3 lsb-release wget sudo && \
+    apt-get install -y ca-certificates lsb-release wget software-properties-common gnupg && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget -O - https://apt.llvm.org/llvm.sh | bash
