@@ -12,7 +12,7 @@ RUN if [ "$(uname -m)" = "aarch64" ]; then \
     fi
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN wget -O - https://apt.llvm.org/llvm.sh | bash
+RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 
 
 RUN apt-get -y update && \
     apt-get -y install python \
