@@ -97,6 +97,10 @@ def unpatch_windows_debug():
   file_patch = "./src/heap/heap.h"
   base.move_file(file_patch + ".bak", file_patch)
   return
+  
+def create_symlink(src, dest):
+    if not os.path.exists(dest):
+        subprocess.run(["sudo", "ln", "-s", src, dest], check=True)
 
 
 def is_package_installed(package_name):
@@ -111,159 +115,34 @@ def install_clang():
     return True
   print("Clang++ Installing...")
   try:
-    # see website how config https://apt.llvm.org/
-    subprocess.check_call("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True)
-    subprocess.check_call(["sudo", "apt-get", "update"])
-    subprocess.check_call(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"])
-    if not os.path.exists("/usr/bin/clang"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/clang-12", "/usr/bin/clang"])
-    if not os.path.exists("/usr/bin/clang-cpp"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/clang-cpp-12", "/usr/bin/clang-cpp"])
-    if not os.path.exists("/usr/bin/clang++"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/clang++-12", "/usr/bin/clang++"])
-    if not os.path.exists("/usr/bin/dsymutil"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/dsymutil-12", "/usr/bin/dsymutil"])
-    if not os.path.exists("/usr/bin/llc"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llc-12", "/usr/bin/llc"])
-    if not os.path.exists("/usr/bin/lli"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/lli-12", "/usr/bin/lli"])
-    if not os.path.exists("/usr/bin/lli-child-target"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/lli-child-target-12", "/usr/bin/lli-child-target"])
-    if(not os.path.exists("/usr/bin/llvm-PerfectShuffle")):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-PerfectShuffle-12", "/usr/bin/llvm-PerfectShuffle"])
-    if not os.path.exists("/usr/bin/llvm-addr2line"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-addr2line-12", "/usr/bin/llvm-addr2line"])
-    if not os.path.exists("/usr/bin/llvm-ar"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-ar-12", "/usr/bin/llvm-ar"])
-    if not os.path.exists("/usr/bin/llvm-as"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-as-12", "/usr/bin/llvm-as"])
-    if not os.path.exists("/usr/bin/llvm-bcanalyzer"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-bcanalyzer-12", "/usr/bin/llvm-bcanalyzer"])
-    if not os.path.exists("/usr/bin/llvm-c-test"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-c-test-12", "/usr/bin/llvm-c-test"])
-    if not os.path.exists("/usr/bin/llvm-cat"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cat-12", "/usr/bin/llvm-cat"])
-    if not os.path.exists("/usr/bin/llvm-cfi-verify"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cfi-verify-12", "/usr/bin/llvm-cfi-verify"])
-    if not os.path.exists("/usr/bin/llvm-config"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-config-12", "/usr/bin/llvm-config"])
-    if not os.path.exists("/usr/bin/llvm-cov"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cov-12", "/usr/bin/llvm-cov"])
-    if not os.path.exists("/usr/bin/llvm-cvtres"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cvtres-12", "/usr/bin/llvm-cvtres"])
-    if not os.path.exists("/usr/bin/llvm-cxxdump"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cxxdump-12", "/usr/bin/llvm-cxxdump"])
-    if not os.path.exists("/usr/bin/llvm-cxxfilt"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cxxfilt-12", "/usr/bin/llvm-cxxfilt"])
-    if not os.path.exists("/usr/bin/llvm-cxxmap"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-cxxmap-12", "/usr/bin/llvm-cxxmap"])
-    if not os.path.exists("/usr/bin/llvm-diff"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-diff-12", "/usr/bin/llvm-diff"])
-    if not os.path.exists("/usr/bin/llvm-dis"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-dis-12", "/usr/bin/llvm-dis"])
-    if not os.path.exists("/usr/bin/llvm-dlltool"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-dlltool-12", "/usr/bin/llvm-dlltool"])
-    if not os.path.exists("/usr/bin/llvm-dwarfdump"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-dwarfdump-12", "/usr/bin/llvm-dwarfdump"])
-    if not os.path.exists("/usr/bin/llvm-dwp"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-dwp-12", "/usr/bin/llvm-dwp"])
-    if not os.path.exists("/usr/bin/llvm-elfabi"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-elfabi-12", "/usr/bin/llvm-elfabi"])
-    if not os.path.exists("/usr/bin/llvm-exegesis"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-exegesis-12", "/usr/bin/llvm-exegesis"])
-    if not os.path.exists("/usr/bin/llvm-extract"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-extract-12", "/usr/bin/llvm-extract"])
-    if not os.path.exists("/usr/bin/llvm-ifs"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-ifs-12", "/usr/bin/llvm-ifs"])
-    if not os.path.exists("/usr/bin/llvm-install-name-tool"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-install-name-tool-12", "/usr/bin/llvm-install-name-tool"])
-    if not os.path.exists("/usr/bin/llvm-jitlink"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-jitlink-12", "/usr/bin/llvm-jitlink"])
-    if not os.path.exists("/usr/bin/llvm-lib"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-lib-12", "/usr/bin/llvm-lib"])
-    if not os.path.exists("/usr/bin/llvm-link"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-link-12", "/usr/bin/llvm-link"])
-    if not os.path.exists("/usr/bin/llvm-lipo"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-lipo-12", "/usr/bin/llvm-lipo"])
-    if not os.path.exists("/usr/bin/llvm-lto"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-lto-12", "/usr/bin/llvm-lto"])
-    if not os.path.exists("/usr/bin/llvm-lto2"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-lto2-12", "/usr/bin/llvm-lto2"])
-    if not os.path.exists("/usr/bin/llvm-mc"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-mc-12", "/usr/bin/llvm-mc"])
-    if not os.path.exists("/usr/bin/llvm-mca"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-mca-12", "/usr/bin/llvm-mca"])
-    if not os.path.exists("/usr/bin/llvm-modextract"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-modextract-12", "/usr/bin/llvm-modextract"])
-    if not os.path.exists("/usr/bin/llvm-mt"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-mt-12", "/usr/bin/llvm-mt"])
-    if not os.path.exists("/usr/bin/llvm-nm"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-nm-12", "/usr/bin/llvm-nm"])
-    if not os.path.exists("/usr/bin/llvm-objcopy"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-objcopy-12", "/usr/bin/llvm-objcopy"])
-    if not os.path.exists("/usr/bin/llvm-objdump"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-objdump-12", "/usr/bin/llvm-objdump"])
-    if not os.path.exists("/usr/bin/llvm-opt-report"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-opt-report-12", "/usr/bin/llvm-opt-report"])
-    if not os.path.exists("/usr/bin/llvm-pdbutil"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-pdbutil-12", "/usr/bin/llvm-pdbutil"])
-    if not os.path.exists("/usr/bin/llvm-profdata"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-profdata-12", "/usr/bin/llvm-profdata"])
-    if not os.path.exists("/usr/bin/llvm-ranlib"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-ranlib-12", "/usr/bin/llvm-ranlib"])
-    if not os.path.exists("/usr/bin/llvm-rc"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-rc-12", "/usr/bin/llvm-rc"])
-    if not os.path.exists("/usr/bin/llvm-readelf"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-readelf-12", "/usr/bin/llvm-readelf"])
-    if not os.path.exists("/usr/bin/llvm-readobj"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-readobj-12", "/usr/bin/llvm-readobj"])
-    if not os.path.exists("/usr/bin/llvm-reduce"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-reduce-12", "/usr/bin/llvm-reduce"])
-    if not os.path.exists("/usr/bin/llvm-rtdyld"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-rtdyld-12", "/usr/bin/llvm-rtdyld"])
-    if not os.path.exists("/usr/bin/llvm-size"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-size-12", "/usr/bin/llvm-size"])
-    if not os.path.exists("/usr/bin/llvm-split"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-split-12", "/usr/bin/llvm-split"])
-    if not os.path.exists("/usr/bin/llvm-stress"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-stress-12", "/usr/bin/llvm-stress"])
-    if not os.path.exists("/usr/bin/llvm-strings"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-strings-12", "/usr/bin/llvm-strings"])
-    if not os.path.exists("/usr/bin/llvm-strip"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-strip-12", "/usr/bin/llvm-strip"])
-    if not os.path.exists("/usr/bin/llvm-symbolizer"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-symbolizer-12", "/usr/bin/llvm-symbolizer"])
-    if not os.path.exists("/usr/bin/llvm-tblgen"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-tblgen-12", "/usr/bin/llvm-tblgen"])
-    if not os.path.exists("/usr/bin/llvm-undname"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-undname-12", "/usr/bin/llvm-undname"])
-    if not os.path.exists("/usr/bin/llvm-xray"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/llvm-xray-12", "/usr/bin/llvm-xray"])
-    if not os.path.exists("/usr/bin/not"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/not-12", "/usr/bin/not"])
-    if not os.path.exists("/usr/bin/obj2yaml"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/obj2yaml-12", "/usr/bin/obj2yaml"])
-    if not os.path.exists("/usr/bin/opt"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/opt-12", "/usr/bin/opt"])
-    if not os.path.exists("/usr/bin/verify-uselistorder"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/verify-uselistorder-12", "/usr/bin/verify-uselistorder"])
-    if not os.path.exists("/usr/bin/sanstats"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/sanstats-12", "/usr/bin/sanstats"])
-    if not os.path.exists("/usr/bin/yaml-bench"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/yaml-bench-12", "/usr/bin/yaml-bench"])
-    if not os.path.exists("/usr/bin/yaml2obj"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/yaml2obj-12", "/usr/bin/yaml2obj"])
-    if not os.path.exists("/usr/bin/ld.lld"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/ld.lld-12", "/usr/bin/ld.lld"])
-    if not os.path.exists("/usr/bin/lld"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/lld-12", "/usr/bin/lld"])
-    if not os.path.exists("/usr/bin/ld64.lld"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/ld64.lld-12", "/usr/bin/ld64.lld"])
-    if not os.path.exists("/usr/bin/lld-link"):
-      base.cmd("sudo", ["ln","-s", "/usr/bin/lld-link-12", "/usr/bin/lld-link"])
+    subprocess.run("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True, check=True)
+    subprocess.run(["sudo", "apt-get", "update"], check=True)
+    subprocess.run(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"], check=True)
+    binaries = [
+        "clang", "clang-cpp", "clang++", "dsymutil", "llc", "lli", "lli-child-target",
+        "llvm-PerfectShuffle", "llvm-addr2line", "llvm-ar", "llvm-as", "llvm-bcanalyzer",
+        "llvm-c-test", "llvm-cat", "llvm-cfi-verify", "llvm-config", "llvm-cov",
+        "llvm-cvtres", "llvm-cxxdump", "llvm-cxxfilt", "llvm-cxxmap", "llvm-diff",
+        "llvm-dis", "llvm-dlltool", "llvm-dwarfdump", "llvm-dwp", "llvm-elfabi",
+        "llvm-exegesis", "llvm-extract", "llvm-ifs", "llvm-install-name-tool",
+        "llvm-jitlink", "llvm-lib", "llvm-link", "llvm-lipo", "llvm-lto", "llvm-lto2",
+        "llvm-mc", "llvm-mca", "llvm-modextract", "llvm-mt", "llvm-nm", "llvm-objcopy",
+        "llvm-objdump", "llvm-opt-report", "llvm-pdbutil", "llvm-profdata", "llvm-ranlib",
+        "llvm-rc", "llvm-readelf", "llvm-readobj", "llvm-reduce", "llvm-rtdyld",
+        "llvm-size", "llvm-split", "llvm-stress", "llvm-strings", "llvm-strip",
+        "llvm-symbolizer", "llvm-tblgen", "llvm-undname", "llvm-xray", "not", "obj2yaml",
+        "opt", "verify-uselistorder", "sanstats", "yaml-bench", "yaml2obj", "ld.lld",
+        "lld", "ld64.lld", "lld-link"
+    ]
+    for binary in binaries:
+        create_symlink(f"/usr/bin/{binary}-12", f"/usr/bin/{binary}")
+
     print("Clang++ installed successfully.")
-  except subprocess.CalledProcessError as e:
+
+except subprocess.CalledProcessError as e:
     print("Failed to install clang: ", e)
+    print("err out：", e.output)
+    print("errcode：", e.returncode)
     return False
   return True
 def update_gcc_version():
