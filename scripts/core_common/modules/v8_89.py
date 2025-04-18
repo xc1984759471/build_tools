@@ -108,42 +108,47 @@ def is_package_installed(package_name):
   out, err = process.communicate()
   return process.returncode == 0
 def install_clang():
-  # Check if the packages are already installed
-  packages = ["clang-12", "lld-12", "x11-utils", "llvm-12"]
-  if all(is_package_installed(pkg) for pkg in packages):
-    print("clang-12, lld-12, x11-utils, llvm-12 required packages are already installed.")
+    # Check if the packages are already installed
+    packages = ["clang-12", "lld-12", "x11-utils", "llvm-12"]
+    if all(is_package_installed(pkg) for pkg in packages):
+        print("clang-12, lld-12, x11-utils, llvm-12 required packages are already installed.")
+        return True
+    print("Clang++ Installing...")
+    try:
+        subprocess.run("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True, check=True)
+        subprocess.run(["sudo", "apt-get", "update"], check=True)
+        subprocess.run(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"], check=True)
+        
+        binaries = [
+            "clang", "clang-cpp", "clang++", "dsymutil", "llc", "lli", "lli-child-target",
+            "llvm-PerfectShuffle", "llvm-addr2line", "llvm-ar", "llvm-as", "llvm-bcanalyzer",
+            "llvm-c-test", "llvm-cat", "llvm-cfi-verify", "llvm-config", "llvm-cov",
+            "llvm-cvtres", "llvm-cxxdump", "llvm-cxxfilt", "llvm-cxxmap", "llvm-diff",
+            "llvm-dis", "llvm-dlltool", "llvm-dwarfdump", "llvm-dwp", "llvm-elfabi",
+            "llvm-exegesis", "llvm-extract", "llvm-ifs", "llvm-install-name-tool",
+            "llvm-jitlink", "llvm-lib", "llvm-link", "llvm-lipo", "llvm-lto", "llvm-lto2",
+            "llvm-mc", "llvm-mca", "llvm-modextract", "llvm-mt", "llvm-nm", "llvm-objcopy",
+            "llvm-objdump", "llvm-opt-report", "llvm-pdbutil", "llvm-profdata", "llvm-ranlib",
+            "llvm-rc", "llvm-readelf", "llvm-readobj", "llvm-reduce", "llvm-rtdyld",
+            "llvm-size", "llvm-split", "llvm-stress", "llvm-strings", "llvm-strip",
+            "llvm-symbolizer", "llvm-tblgen", "llvm-undname", "llvm-xray", "not", "obj2yaml",
+            "opt", "verify-uselistorder", "sanstats", "yaml-bench", "yaml2obj", "ld.lld",
+            "lld", "ld64.lld", "lld-link"
+        ]
+        
+        for binary in binaries:
+            create_symlink("/usr/bin/" + binary + "-12", "/usr/bin/" + binary)
+        
+        print("Clang++ installed successfully.")
+    
+    except subprocess.CalledProcessError as e:
+        print("Failed to install clang: ", e)
+        print("err out：", e.output)
+        print("errcode：", e.returncode)
+        return False
+    
     return True
-  print("Clang++ Installing...")
-  try:
-    subprocess.run("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True, check=True)
-    subprocess.run(["sudo", "apt-get", "update"], check=True)
-    subprocess.run(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"], check=True)
-    binaries = [
-        "clang", "clang-cpp", "clang++", "dsymutil", "llc", "lli", "lli-child-target",
-        "llvm-PerfectShuffle", "llvm-addr2line", "llvm-ar", "llvm-as", "llvm-bcanalyzer",
-        "llvm-c-test", "llvm-cat", "llvm-cfi-verify", "llvm-config", "llvm-cov",
-        "llvm-cvtres", "llvm-cxxdump", "llvm-cxxfilt", "llvm-cxxmap", "llvm-diff",
-        "llvm-dis", "llvm-dlltool", "llvm-dwarfdump", "llvm-dwp", "llvm-elfabi",
-        "llvm-exegesis", "llvm-extract", "llvm-ifs", "llvm-install-name-tool",
-        "llvm-jitlink", "llvm-lib", "llvm-link", "llvm-lipo", "llvm-lto", "llvm-lto2",
-        "llvm-mc", "llvm-mca", "llvm-modextract", "llvm-mt", "llvm-nm", "llvm-objcopy",
-        "llvm-objdump", "llvm-opt-report", "llvm-pdbutil", "llvm-profdata", "llvm-ranlib",
-        "llvm-rc", "llvm-readelf", "llvm-readobj", "llvm-reduce", "llvm-rtdyld",
-        "llvm-size", "llvm-split", "llvm-stress", "llvm-strings", "llvm-strip",
-        "llvm-symbolizer", "llvm-tblgen", "llvm-undname", "llvm-xray", "not", "obj2yaml",
-        "opt", "verify-uselistorder", "sanstats", "yaml-bench", "yaml2obj", "ld.lld",
-        "lld", "ld64.lld", "lld-link"
-    ]
-    for binary in binaries:
-        create_symlink("/usr/bin/" + binary + "-12", "/usr/bin/" + binary)
-    print("Clang++ installed successfully.")
 
-except subprocess.CalledProcessError as e:
-    print("Failed to install clang: ", e)
-    print("err out：", e.output)
-    print("errcode：", e.returncode)
-    return False
-  return True
 def update_gcc_version():
   base.cmd("sudo",["add-apt-repository", "ppa:ubuntu-toolchain-r/test"])
   base.cmd("sudo",["apt-get", "update"])
