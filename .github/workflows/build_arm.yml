@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-arm-runer
   
     steps:
     - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
         mkdir out
         mkdir -p $PWD/log
         docker build --build-arg BRANCH=${{ github.ref_name }} --build-arg PLATFORM=linux_arm64 --tag onlyoffice-document-editors-builder .
-        docker run -v $PWD/out:/build_tools/out onlyoffice-document-editors-builder > $PWD/log/logfile.log 2>&1
+        docker run -v $PWD/out:/build_tools/out onlyoffice-document-editors-builder
 
     - name: Package deb
       run: |
