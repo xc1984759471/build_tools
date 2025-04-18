@@ -12,7 +12,9 @@ RUN if [ "$(uname -m)" = "aarch64" ]; then \
     fi
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
+RUN apt-get -o Acquire::https::Verify-Peer=false update && \
+     apt-get -y install ca-certificates
+     
 RUN apt-get update && \
     apt-get install -y python python3 wget sudo && \
     rm -rf /var/lib/apt/lists/*
