@@ -16,7 +16,7 @@ RUN apt-get -o Acquire::https::Verify-Peer=false update && \
      apt-get -y install ca-certificates
      
 RUN apt-get update && \
-    apt-get install -y python python3 wget sudo && \
+    apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
