@@ -16,10 +16,11 @@ RUN apt-get -o Acquire::https::Verify-Peer=false update && \
      apt-get -y install ca-certificates
      
 RUN apt-get update && \
-    apt-get install -y ca-certificates lsb-release wget software-properties-common gnupg && \
+    apt-get install -y ca-certificates wget && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget -O - https://apt.llvm.org/llvm.sh | bash
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+RUN echo \"deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main\" | sudo tee /etc/apt/sources.list.d/llvm.list
 
 RUN apt-get update && \
     apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
