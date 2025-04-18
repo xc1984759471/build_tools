@@ -116,9 +116,9 @@ def install_clang():
         return True
     print("Clang++ Installing...")
     try:
-        subprocess.check_call("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True, check=True)
-        subprocess.check_call(["sudo", "apt-get", "update"], check=True)
-        subprocess.check_call(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"], check=True)
+        subprocess.check_call("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True)
+        subprocess.check_call(["sudo", "apt-get", "update"])
+        subprocess.check_call(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"])
         
         binaries = [
             "clang", "clang-cpp", "clang++", "dsymutil", "llc", "lli", "lli-child-target",
