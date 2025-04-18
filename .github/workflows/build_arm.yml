@@ -22,9 +22,7 @@ jobs:
     - name: Build project
       id: build_step
       run: |
-        sudo apt-get install -y python3 python3-pip
-        sudo apt-get install -y python-is-python3
-        git clone https://github.com/fernfei/build_tools.git
+        git clone --branch ${{ github.ref_name }} https://github.com/fernfei/build_tools.git
         mkdir out
         docker build --build-arg BRANCH=${{ github.ref_name }} --build-arg PLATFORM=linux_arm64 --tag onlyoffice-document-editors-builder .
         docker run -v $PWD/out:/build_tools/out onlyoffice-document-editors-builder
