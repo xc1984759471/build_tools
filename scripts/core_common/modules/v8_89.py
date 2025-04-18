@@ -99,8 +99,8 @@ def unpatch_windows_debug():
   return
   
 def create_symlink(src, dest):
-    if not os.path.exists(dest):
-        subprocess.run(["sudo", "ln", "-s", src, dest], check=True)
+  if not os.path.exists(dest):
+    subprocess.run(["sudo", "ln", "-s", src, dest], check=True)
 
 
 def is_package_installed(package_name):
