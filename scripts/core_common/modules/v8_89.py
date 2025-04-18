@@ -143,8 +143,8 @@ def install_clang():
     
     except subprocess.CalledProcessError as e:
         print("Failed to install clang: ",e)
-        print("errout：",e.output)
-        print("errcode：",e.returncode)
+        print("errout:",e.output)
+        print("errcode:",e.returncode)
         return False
     
     return True
