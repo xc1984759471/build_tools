@@ -14,7 +14,7 @@ ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get -o Acquire::https::Verify-Peer=false update && \
      apt-get -y install ca-certificates
-     
+
 RUN apt-get update && \
     apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg && \
     rm -rf /var/lib/apt/lists/*
@@ -25,6 +25,15 @@ RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | tee /et
 RUN apt-get update && \
     apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
     rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y \
+    autoconf2.13 cmake curl git libtool \
+    libglu1-mesa-dev libgtk-3-dev libpulse-dev \
+    p7zip-full subversion libasound2-dev libatspi2.0-dev \
+    libcups2-dev libdbus-1-dev libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev libx11-xcb-dev \
+    libxi-dev libxrender-dev libxss1
 
                        
 RUN rm /usr/bin/python && ln -s /usr/bin/python2 /usr/bin/python
