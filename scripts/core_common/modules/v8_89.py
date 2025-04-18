@@ -101,7 +101,7 @@ def unpatch_windows_debug():
   
 def create_symlink(src, dest):
   if not os.path.exists(dest):
-    base.cmd("sudo", ["ln","-s", src, dest)
+    base.cmd("sudo", ["ln","-s", src, dest])
 
 
 def is_package_installed(package_name):
