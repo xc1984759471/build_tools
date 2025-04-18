@@ -118,7 +118,9 @@ def install_clang():
         return True
     print("Clang++ Installing...")
     try:
-        subprocess.check_call("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True)
+        # see website how config https://apt.llvm.org/
+        subprocess.check_call("wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -", shell=True)
+        subprocess.check_call("echo \"deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main\" | sudo tee /etc/apt/sources.list.d/llvm.list",shell=True)
         subprocess.check_call(["sudo", "apt-get", "update"])
         subprocess.check_call(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"])
         
