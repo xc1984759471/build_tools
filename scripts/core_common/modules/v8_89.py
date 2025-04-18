@@ -101,7 +101,7 @@ def unpatch_windows_debug():
   
 def create_symlink(src, dest):
   if not os.path.exists(dest):
-    subprocess.run(["sudo", "ln", "-s", src, dest], check=True)
+    base.cmd("sudo", ["ln","-s", src, dest)
 
 
 def is_package_installed(package_name):
@@ -116,9 +116,9 @@ def install_clang():
         return True
     print("Clang++ Installing...")
     try:
-        subprocess.run("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True, check=True)
-        subprocess.run(["sudo", "apt-get", "update"], check=True)
-        subprocess.run(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"], check=True)
+        subprocess.check_call("wget -O - https://apt.llvm.org/llvm.sh | bash", shell=True, check=True)
+        subprocess.check_call(["sudo", "apt-get", "update"], check=True)
+        subprocess.check_call(["sudo", "apt-get", "install", "-y", "clang-12", "lld-12", "x11-utils", "llvm-12"], check=True)
         
         binaries = [
             "clang", "clang-cpp", "clang++", "dsymutil", "llc", "lli", "lli-child-target",
