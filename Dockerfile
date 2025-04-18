@@ -12,16 +12,19 @@ RUN if [ "$(uname -m)" = "aarch64" ]; then \
     fi
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 
 
 RUN apt-get -y update && \
     apt-get -y install python \
                        python3 \
-                       clang-12 \
+                       wget \
+                       sudo                      
+RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 
+RUN apt-get -y update && \
+    apt-get -y install clang-12 \
                        lld-12 \
                        x11-utils \
                        llvm-12 \
-                       sudo
+                       
 RUN rm /usr/bin/python && ln -s /usr/bin/python2 /usr/bin/python
 
 ADD . /build_tools
