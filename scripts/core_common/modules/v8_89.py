@@ -113,6 +113,8 @@ def install_clang():
     packages = ["clang-12", "lld-12", "x11-utils", "llvm-12"]
     if all(is_package_installed(pkg) for pkg in packages):
         print("clang-12, lld-12, x11-utils, llvm-12 required packages are already installed.")
+        for binary in binaries:
+            create_symlink("/usr/bin/" + binary + "-12", "/usr/bin/" + binary)
         return True
     print("Clang++ Installing...")
     try:
