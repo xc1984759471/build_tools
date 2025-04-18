@@ -135,8 +135,7 @@ def install_clang():
         "lld", "ld64.lld", "lld-link"
     ]
     for binary in binaries:
-        create_symlink(f"/usr/bin/{binary}-12", f"/usr/bin/{binary}")
-
+        create_symlink("/usr/bin/" + binary + "-12", "/usr/bin/" + binary)
     print("Clang++ installed successfully.")
 
 except subprocess.CalledProcessError as e:
