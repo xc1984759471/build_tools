@@ -18,17 +18,17 @@ RUN apt-get -o Acquire::https::Verify-Peer=false update && \
 RUN apt-get update && \
     apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg && \
     rm -rf /var/lib/apt/lists/*
-RUN add-apt-repository universe
 
 RUN apt-get update && \
     apt-get install -y \
     autoconf2.13 cmake curl git libtool \
     libglu1-mesa-dev libgtk-3-dev libpulse-dev \
     p7zip-full subversion libasound2-dev libatspi2.0-dev \
-    libcups2-dev libdbus-1-dev libgstreamer1.0-dev \
-    libgstreamer-plugins-base1.0-dev libx11-xcb-dev \
-    libxi-dev libxrender-dev libxss1
+    libcups2-dev libdbus-1-dev libglib2.0-dev \
+    libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+    libx11-xcb-dev libxi-dev libxrender-dev libxss1
 
+RUN add-apt-repository universe
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | tee /etc/apt/sources.list.d/llvm.list
 
