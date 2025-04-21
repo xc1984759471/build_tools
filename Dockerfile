@@ -7,14 +7,6 @@ RUN apt-get -o Acquire::https::Verify-Peer=false update && \
 RUN apt-get update && \
     apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg
 
-RUN apt-get install -y --no-install-recommends \
-    autoconf2.13 cmake curl git libtool \
-    libglu1-mesa-dev libgtk-3-dev libpulse-dev \
-    p7zip-full subversion libasound2-dev libatspi2.0-dev \
-    libcups2-dev libdbus-1-dev \
-    libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
-    libx11-xcb-dev libxi-dev libxrender-dev libxss1
-
 
 RUN add-apt-repository universe
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
