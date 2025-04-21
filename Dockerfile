@@ -5,11 +5,9 @@ RUN apt-get -o Acquire::https::Verify-Peer=false update && \
      apt-get -y install ca-certificates
 
 RUN apt-get update && \
-    apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg
 
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get install -y --no-install-recommends \
     autoconf2.13 cmake curl git libtool \
     libglu1-mesa-dev libgtk-3-dev libpulse-dev \
     p7zip-full subversion libasound2-dev libatspi2.0-dev \
@@ -17,12 +15,13 @@ RUN apt-get update && \
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
     libx11-xcb-dev libxi-dev libxrender-dev libxss1
 
+
 RUN add-apt-repository universe
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | tee /etc/apt/sources.list.d/llvm.list
 
-RUN apt-get update && \
-    apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
+RUN apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 
