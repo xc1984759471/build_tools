@@ -11,7 +11,7 @@ RUN apt-get install -y --no-install-recommends \
     autoconf2.13 cmake curl git libtool \
     libglu1-mesa-dev libgtk-3-dev libpulse-dev \
     p7zip-full subversion libasound2-dev libatspi2.0-dev \
-    libcups2-dev libdbus-1-dev libglib2.0-dev \
+    libcups2-dev libdbus-1-dev \
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
     libx11-xcb-dev libxi-dev libxrender-dev libxss1
 
@@ -21,7 +21,7 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | tee /etc/apt/sources.list.d/llvm.list
 
 RUN apt-get update && \
-    apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
+    apt-get install -y build-essential libglib2.0-dev clang-12 lld-12 x11-utils llvm-12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
