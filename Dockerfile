@@ -20,7 +20,8 @@ RUN add-apt-repository universe
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | tee /etc/apt/sources.list.d/llvm.list
 
-RUN apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
+RUN apt-get update && \
+    apt-get install -y clang-12 lld-12 x11-utils llvm-12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
