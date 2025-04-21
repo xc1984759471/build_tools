@@ -1,0 +1,79 @@
+name: Build OnlyOffice Arm Ver
+
+on:
+  push:
+    branches:
+      - release/v8.1.0
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+  
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Docker Setup Docker
+      # You may pin to the exact commit or the version.
+      # uses: docker/setup-docker-action@b60f85385d03ac8acfca6d9996982511d8620a19
+      uses: docker/setup-docker-action@v4.3.0
+        
+    - name: Build project
+      id: build_step
+      run: |
+        git clone --branch ${{ github.ref_name }} https://github.com/fernfei/build_tools.git
+        mkdir out
+        docker build --build-arg BRANCH=${{ github.ref_name }} --build-arg PLATFORM=linux_arm64 --tag onlyoffice-document-editors-builder .
+        docker run -v $PWD/out:/build_tools/out onlyoffice-document-editors-builder
+
+    - name: Package deb
+      run: |
+        cd ../../../
+        git clone https://github.com/ONLYOFFICE/document-server-package.git
+        cd document-server-package
+        # 使用 shell 变量替换 'v'
+        VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+        PRODUCT_VERSION=$VERSION BUILD_NUMBER='1' make deb
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: compiled-files
+        path: document-server-package/deb/
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: compiled-files
+        path: ./output
+
+    - name: Create Release
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 使用 shell 移除 'v' 前缀
+        CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+        echo "Creating release with version: $CLEAN_VERSION"
+        gh release create $CLEAN_VERSION -t "Release $CLEAN_VERSION" -n "" --repo ${GITHUB_REPOSITORY}
+        echo "::set-output name=upload_url::$(gh release view $CLEAN_VERSION --json url | jq -r '.url')/assets"
+
+    - name: Set version environment
+      run: echo "CLEAN_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./output/
+        asset_name: ONLYOFFICE-DocumentServer-${{ env.CLEAN_VERSION }}_arm64.deb
+        asset_content_type: application/octet-stream

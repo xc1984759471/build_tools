@@ -1,28 +1,26 @@
 FROM ubuntu:18.04
-RUN if [ "$(uname -m)" = "aarch64" ]; then \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main restricted universe multiverse" > /etc/apt/sources.list && \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-        echo "deb http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list; \
-    else \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list && \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-        echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-        echo "deb http://security.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list; \
-    fi
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 RUN apt-get -o Acquire::https::Verify-Peer=false update && \
-    apt-get -y install ca-certificates
+     apt-get -y install ca-certificates
 
-RUN update-ca-certificates
+RUN apt-get update && \
+    apt-get install -y python python3 wget sudo lsb-release software-properties-common gnupg
 
-RUN apt-get -y update && \
-    apt-get -y install python \
-                       python3 \
-                       sudo
+
+RUN add-apt-repository universe
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+RUN echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main | tee /etc/apt/sources.list.d/llvm.list
+
+RUN apt-get update && \
+    apt-get install -y build-essential clang-12 lld-12 x11-utils llvm-12 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+
+                       
 RUN rm /usr/bin/python && ln -s /usr/bin/python2 /usr/bin/python
+
 ADD . /build_tools
 WORKDIR /build_tools
 
